@@ -1,43 +1,55 @@
 import * as fs from "fs";
 import * as path from "path";
 
-function parseFilePath(csvFilePath: string): string | undefined {
-  const _dirname = import.meta.dirname;
-  let parsedFilePath: string;
-  try {
-    parsedFilePath = path.join(_dirname, csvFilePath);
-  } catch (error) {
-    throw new Error(`Error parsing file path: ${error}`);
+class BatchAddressGeocoder {
+  url = "https://geocoding.geo.census.gov/geocoder/locations/addressbatch";
+  inputFilePath: string;
+  outputFilePath: string = "batch_coordinates.csv";
+
+  constructor(inputFilePath: string, outputFilePath?: string) {
+    this.inputFilePath = inputFilePath;
+    if (outputFilePath) this.outputFilePath = outputFilePath;
   }
 
-  return parsedFilePath ? parsedFilePath : undefined;
-}
+  _parseFilePath(csvFilePath: string): string | undefined {
+    // create absolute directory name for fs methods
+    const _dirname = import.meta.dirname;
+    let parsedFilePath: string;
+    try {
+      parsedFilePath = path.join(_dirname, csvFilePath);
+    } catch (error) {
+      throw new Error(`Error parsing file path: ${error}`);
+    }
 
-function createFormData(filePath: string): FormData | undefined {
-  const blob = new Blob([fileBuffer], { type: "text/plain" });
-  const formData = new FormData();
-  formData.append("addressFile", blob, path.basename(csvFilePath));
-  formData.append("benchmark", "Public_AR_Current");
-  formData.append("returntype", "location");
+    return parsedFilePath ? parsedFilePath : undefined;
+  }
 
-  return formData;
-}
+  _createFormData(filePath: string): FormData | undefined {
+    const fileBuffer = fs.readFileSync(filePath);
+    const blob = new Blob([fileBuffer], { type: "text/plain" });
+    const formData = new FormData();
+    formData.append("addressFile", blob, path.basename(filePath));
+    formData.append("benchmark", "Public_AR_Current");
+    formData.append("returntype", "location");
 
-export default async function geocodeBatch(
-  csvFilePath: string,
-  outputPath: string = "geocoded_output.csv",
-): Promise<void> {
-  const fileBuffer = fs.readFileSync(parsedFilePath);
+    return formData;
+  }
 
-  const url =
-    "https://geocoding.geo.census.gov/geocoder/locations/addressbatch";
+  async geocodeBatch(): Promise<void> {
+    const formData: FormData | undefined = this._createFormData(
+      this.inputFilePath,
+    );
 
-  const response = await fetch(url, { method: "POST", body: formData });
-  if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-  const resultCsv = await response.text();
+    const response: Response | undefined = await fetch(this.url, {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+    const resultCsv = await response.text();
 
-  fs.writeFileSync(outputPath, resultCsv);
-  console.log(`Saved to ${outputPath}`);
+    fs.writeFileSync(outputPath, resultCsv);
+    console.log(`Saved to ${outputPath}`);
+  }
 }
 
 geocodeBatch("5-14-26.csv");
