@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-class BatchAddressGeocoder {
+export class BatchAddressGeocoder {
   url = "https://geocoding.geo.census.gov/geocoder/locations/addressbatch";
   inputFilePath: string;
   outputFilePath: string = "batch_coordinates.csv";
@@ -13,10 +13,9 @@ class BatchAddressGeocoder {
 
   _parseFilePath(csvFilePath: string): string | undefined {
     // create absolute directory name for fs methods
-    const _dirname = import.meta.dirname;
     let parsedFilePath: string;
     try {
-      parsedFilePath = path.join(_dirname, csvFilePath);
+      parsedFilePath = path.join(import.meta.dirname, csvFilePath);
     } catch (error) {
       throw new Error(`Error parsing file path: ${error}`);
     }
@@ -26,8 +25,11 @@ class BatchAddressGeocoder {
 
   _createFormData(filePath: string): FormData | undefined {
     const fileBuffer = fs.readFileSync(filePath);
+    if (!fileBuffer) throw new Error(`Unable to read file ${filePath}`);
+
     const blob = new Blob([fileBuffer], { type: "text/plain" });
     const formData = new FormData();
+
     formData.append("addressFile", blob, path.basename(filePath));
     formData.append("benchmark", "Public_AR_Current");
     formData.append("returntype", "location");
@@ -39,17 +41,16 @@ class BatchAddressGeocoder {
     const formData: FormData | undefined = this._createFormData(
       this.inputFilePath,
     );
-
-    const response: Response | undefined = await fetch(this.url, {
+    if (!formData)
+      throw new Error(`Error creating FormData from ${this.inputFilePath}`);
+    const response = await fetch(this.url, {
       method: "POST",
       body: formData,
     });
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
     const resultCsv = await response.text();
 
-    fs.writeFileSync(outputPath, resultCsv);
-    console.log(`Saved to ${outputPath}`);
+    fs.writeFileSync(this.outputFilePath, resultCsv);
+    console.log(`Saved to ${this.outputFilePath}`);
   }
 }
-
-geocodeBatch("5-14-26.csv");
