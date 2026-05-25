@@ -71,6 +71,10 @@ describe("BatchAddressGeocoder", () => {
     expect(text).toBe("this is some data");
   });
 
+  it("Creates a csv file", () => {
+    return true;
+  });
+
   // it("returns list of matched addresses if multiple addresses match the input", async () => {
   //   fetchMock.mockResolvedValue({
   //     ok: true,

@@ -16,6 +16,11 @@ export interface OneLineAddressResponse {
   result?: OneLineAddressResult;
 }
 
+/**
+ * Returns the first result from whatever address matches it receives
+ * @param address {string}
+ * @returns {OneLineAddressMatch}
+ */
 export async function geocodeOneLineAddress(
   address: string,
 ): Promise<OneLineAddressMatch | undefined> {
