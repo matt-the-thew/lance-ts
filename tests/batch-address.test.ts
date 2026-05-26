@@ -1,13 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-  test,
-  assert,
-} from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { BatchAddressGeocoder } from "../src/batch-address";
 import { fs, vol } from "memfs";
 import * as path from "path";
@@ -40,7 +31,7 @@ describe("BatchAddressGeocoder", () => {
   });
 
   it("correctly parses absolute file path", () => {
-    // get absolute path
+    // get absolute path from BatchAddressGeocoder
     const parsedPath = TestGeocoder._parseFilePath(TestGeocoder.inputFilePath);
     // it should exist
     expect(parsedPath);
@@ -59,8 +50,8 @@ describe("BatchAddressGeocoder", () => {
 
     // the file field should exist
     expect(formData.get("addressFile")).toBeTruthy;
-    const fileField = formData.get("addressFile") as File;
     // it should generate a blob
+    const fileField = formData.get("addressFile") as File;
     expect(fileField).toBeInstanceOf(Blob);
     // it should hold data
     expect(fileField.size).toBeGreaterThan(0);
@@ -70,35 +61,4 @@ describe("BatchAddressGeocoder", () => {
     const text = await fileField.text();
     expect(text).toBe("this is some data");
   });
-
-  it("Creates a csv file", () => {
-    return true;
-  });
-
-  // it("returns list of matched addresses if multiple addresses match the input", async () => {
-  //   fetchMock.mockResolvedValue({
-  //     ok: true,
-  //     json: async () => ({
-  //       result: {
-  //         addressMatches: [
-  //           {
-  //             coordinates: { x: -77.0365, y: 38.8977 },
-  //             matchedAddress: "1600 Pennsylvania Ave NW, Washington, DC",
-  //           },
-  //           {
-  //             coordinates: { x: -77.0555, y: 38.8555 },
-  //             matchedAddress: "1601 Pennsylvania Ave NW, Washington, DC",
-  //           },
-  //         ],
-  //       },
-  //     }),
-  //   } as Response);
-
-  //   const result = await geocodeBatch(
-  //     "1600 Pennsylvania Ave NW, Washington, DC",
-  //   );
-
-  //   expect(result?.addressMatches)
-  // })
-  // )
 });
