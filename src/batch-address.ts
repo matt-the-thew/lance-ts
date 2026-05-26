@@ -1,8 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
 
+/**
+ * Batch geocoder session handler
+ * @param {string} inputFilePath
+ * @param {string} outputFilePath - @default
+ */
 export class BatchAddressGeocoder {
+  // Set geocoder endpoint
   url = "https://geocoding.geo.census.gov/geocoder/locations/addressbatch";
+
   inputFilePath: string;
   outputFilePath: string = "batch_coordinates.csv";
 
@@ -11,11 +18,17 @@ export class BatchAddressGeocoder {
     if (outputFilePath) this.outputFilePath = outputFilePath;
   }
 
-  _parseFilePath(csvFilePath: string): string | undefined {
+  /**
+   * Finds relative path for a file name
+   * @param {string} localFilePath
+   * @returns {string | undefined} the realtive file path, if exists
+   * @throws {Error} if unable to find relative path
+   */
+  _parseFilePath(localFilePath: string): string | undefined {
     // create absolute directory name for fs methods
     let parsedFilePath: string;
     try {
-      parsedFilePath = path.join(import.meta.dirname, csvFilePath);
+      parsedFilePath = path.join(import.meta.dirname, localFilePath);
     } catch (error) {
       throw new Error(`Error parsing file path: ${error}`);
     }
@@ -23,6 +36,11 @@ export class BatchAddressGeocoder {
     return parsedFilePath ? parsedFilePath : undefined;
   }
 
+  /**
+   * Generates FormData from a file, according to census geocoder specs
+   * @param {string} filePath
+   * @returns {FormData} Formatted form data, converting the file into a {Blob}
+   */
   _createFormData(filePath: string): FormData | undefined {
     const fileBuffer = fs.readFileSync(filePath);
     if (!fileBuffer) throw new Error(`Unable to read file ${filePath}`);
@@ -37,6 +55,11 @@ export class BatchAddressGeocoder {
     return formData;
   }
 
+  /**
+   * Sends generated FormData from blob-ified {@link inputFilePath} to Census Geocoder endpoint,
+   * and writes response to a local file based on {@link outputFilePath}.
+   * @returns {void}
+   */
   async geocodeBatch(): Promise<void> {
     const formData: FormData | undefined = this._createFormData(
       this.inputFilePath,

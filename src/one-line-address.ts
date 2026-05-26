@@ -1,17 +1,33 @@
+/**
+ * Interface for lat/lng coordinates
+ * @interface CensusCoordinates
+ */
 export interface CensusCoordinates {
   x: number;
   y: number;
 }
 
+/**
+ * Interface for a single coordinate pair as {@type CensusCoordinates}
+ * and the associated matched address, as {@type string}
+ * @interface OneLineAddressMatch
+ */
 export interface OneLineAddressMatch {
   coordinates: CensusCoordinates;
   matchedAddress: string;
 }
 
+/**
+ * Interface representing an array of {@type OneLineAddressMatch}
+ * @interface OneLineAddressResult
+ */
 export interface OneLineAddressResult {
   addressMatches: OneLineAddressMatch[];
 }
 
+/**
+ * Interface for the optional result, of type {@type OneLineAddressResult}
+ */
 export interface OneLineAddressResponse {
   result?: OneLineAddressResult;
 }
@@ -20,10 +36,12 @@ export interface OneLineAddressResponse {
  * Returns the first result from whatever address matches it receives
  * @param address {string}
  * @returns {OneLineAddressMatch}
+ * @throws {Error} if response status is not OK
  */
 export async function geocodeOneLineAddress(
   address: string,
 ): Promise<OneLineAddressMatch | undefined> {
+  //format parameters to use latest census data
   const params = new URLSearchParams({
     address,
     benchmark: "Public_AR_Current",
@@ -43,25 +61,31 @@ export async function geocodeOneLineAddress(
     return;
   }
 
+  // warns if multiple matched addresses exist for a single address
   if (matches?.length > 1) {
     console.warn(`Multiple address matches found for ${address}`);
     for (const match of matches) {
-      console.warn("Matched address:", match.matchedAddress);
-      console.warn("Consider geocodeOneLineAddressAll()");
-      console.warn(
-        `Coordinates:
+      console.warn(`[WARNING}: multimple matched addresses for: ${match.matchedAddress}
+      Coordinates:
       X: ${match.coordinates["x"]}
-      ${match.coordinates["y"]}`,
-      );
+      Y: ${match.coordinates["y"]}
+      Consider geocodeOneLineAddressAll()`);
     }
   }
 
   return matches[0];
 }
 
+/**
+ * Returns entire array of {@type OneLineAddressMatch}
+ * @param {string} address - The address to submit to the census geocoder
+ * @returns {OneLineAddressMatch[]} | undefined
+ * @throws {Error} if response status is not OK
+ */
 export async function geocodeOneLineAddressAll(
   address: string,
 ): Promise<OneLineAddressMatch[] | undefined> {
+  //format parameters to use latest census data
   const params = new URLSearchParams({
     address,
     benchmark: "Public_AR_Current",
