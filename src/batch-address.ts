@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import * as path from "path";
 
 /**
@@ -65,15 +65,17 @@ export class BatchAddressGeocoder {
       this.inputFilePath,
     );
     if (!formData)
-      throw new Error(`Error creating FormData from ${this.inputFilePath}`);
+      throw new Error(
+        `Error creating FormData from ${this.inputFilePath}`,
+      );
     const response = await fetch(this.url, {
       method: "POST",
       body: formData,
     });
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-    const resultCsv = await response.text();
+    const responseText = await response.text();
 
-    fs.writeFileSync(this.outputFilePath, resultCsv);
+    fs.writeFileSync(this.outputFilePath, responseText);
     console.log(`Saved to ${this.outputFilePath}`);
   }
 }

@@ -2,9 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   geocodeOneLineAddress,
   geocodeOneLineAddressAll,
-} from "../src/one-line-address";
-import { json } from "stream/consumers";
-import { isAsyncFunction } from "util/types";
+} from "./one-line-address.js";
 
 // create mocking function
 const fetchMock = vi.fn();
@@ -118,6 +116,7 @@ describe("geocodeOneLineAddressAll", () => {
 
     //it should exist
     expect(result).toBeTruthy;
+    if (!result) return false;
     //it should be the correct size
     expect(result?.length).toBe(2);
     //it should have correct data

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "module": "ESNext",
+    "module": "NodeNext",
     "target": "ES2020",
     // For nodejs:
     "lib": ["esnext"],
@@ -33,7 +33,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "moduleResolution": "Node",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true,
   },
 }
