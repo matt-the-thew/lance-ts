@@ -2,33 +2,68 @@ import * as fs from "node:fs";
 import * as path from "path";
 
 /**
- * Batch geocoder session handler
- * @param {string} inputFilePath
- * @param {string} outputFilePath - @default
+ * Batch Address geocoding service.
+ *
+ * Accepts a .csv file of addresses, formatted in the following manner:
+ * ```
+ * UNIQUE ID, STREET ADDR., CITY, STATE, ZIP
+ * ```
+ * Example:
+ * ```
+ * TACO HEAVEN, 1234 SUNSET BLVD., CA, 12345
+ * ```
+ * The output file has a slightly different format:
+ * ```
+ * UNIQUE ID , ORIGINAL ADDRESS , MATCH STATUS , MATCH TYPE , COORDINATES , TIGER/Line ID , SIDE OF STREET
+ * ```
+ * **Unique Id**: The original id passed in the {@link inputFilePath} file
+ *
+ * **Original Address**: The complete address passed in the {@link inputFilePath} file
+ *
+ * **Match status**: Exact (perfect match) | Tie (multiple potential locations) | Non-Exact (uncertain)
+ *
+ * **Coordinates**: Longitude, Latitude
+ *
+ * **TIGER/Line ID**: UID of the street segment or geographic block where the address is located
+ *
+ * **Side of Street**: L (left) | R (right)
+ *
+ * Initialization example:
+ * ```
+ * const geocoder = new BatchAddressGeocoder(".../bar/addressFile.csv", ".../foo/outputFile.csv")
+ * ```
  */
 export class BatchAddressGeocoder {
-  // Set geocoder endpoint
+  // U.S. Census Geocoder endpoint.
   url = "https://geocoding.geo.census.gov/geocoder/locations/addressbatch";
-
   inputFilePath: string;
-  outputFilePath: string = "batch_coordinates.csv";
+  outputFilePath: string;
 
+  /**
+   * Sets input and output file paths.
+   * @param inputFilePath - The absolute path to the input file.
+   * @param outputFilePath - The absolute path to the output file.
+   * @throws Error - "Cannot resolve file paths" if missing {@link inputFilePath} or {@link outputFilePath}
+   */
   constructor(inputFilePath: string, outputFilePath?: string) {
+    if (!inputFilePath || !outputFilePath)
+      throw new Error("[BatchAddressGeocoder]: Cannot resolve file paths");
+
     this.inputFilePath = inputFilePath;
-    if (outputFilePath) this.outputFilePath = outputFilePath;
+    this.outputFilePath = outputFilePath;
   }
 
   /**
-   * Finds relative path for a file name
-   * @param {string} localFilePath
-   * @returns {string | undefined} the realtive file path, if exists
-   * @throws {Error} if unable to find relative path
+   * Determines if it is passed a Finds absolute path for a new local file.
+   * Otherwise, path for existing file.
+   * @param {string} filePath
+   * @returns {string | undefined} the relative file path if it i
    */
-  _parseFilePath(localFilePath: string): string | undefined {
+  _parseFilePath(filePath: string): string | undefined {
     // create absolute directory name for fs methods
     let parsedFilePath: string;
     try {
-      parsedFilePath = path.join(import.meta.dirname, localFilePath);
+      parsedFilePath = path.join(import.meta.dirname, filePath);
     } catch (error) {
       throw new Error(`Error parsing file path: ${error}`);
     }

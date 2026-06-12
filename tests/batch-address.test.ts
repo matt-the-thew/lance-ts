@@ -6,9 +6,10 @@ vi.mock("node:fs", async () => {
   const { fs } = await import("memfs");
   return fs;
 });
+
 //import BatchAddressGeocoder AFTER fs is mocked
 //so it initializes pointed at mocked module
-import { BatchAddressGeocoder } from "./batch-address.js";
+import { BatchAddressGeocoder } from "../src/batch-address.js";
 
 describe("BatchAddressGeocoder", () => {
   let geocoder: BatchAddressGeocoder;

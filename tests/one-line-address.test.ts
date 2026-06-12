@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   geocodeOneLineAddress,
   geocodeOneLineAddressAll,
-} from "./one-line-address.js";
+} from "../src/one-line-address.js";
 
 // create mocking function
 const fetchMock = vi.fn();

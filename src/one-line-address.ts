@@ -8,7 +8,7 @@ export interface CensusCoordinates {
 }
 
 /**
- * Interface for a single coordinate pair as {@type CensusCoordinates}
+ * Interface for a single coordinate pair as {@link CensusCoordinates}
  * and the associated matched address, as {@type string}
  * @interface OneLineAddressMatch
  */
@@ -18,7 +18,7 @@ export interface OneLineAddressMatch {
 }
 
 /**
- * Interface representing an array of {@type OneLineAddressMatch}
+ * Interface representing an array of {@link OneLineAddressMatch}
  * @interface OneLineAddressResult
  */
 export interface OneLineAddressResult {
@@ -26,7 +26,7 @@ export interface OneLineAddressResult {
 }
 
 /**
- * Interface for the optional result, of type {@type OneLineAddressResult}
+ * Interface for the optional result, of type {@link OneLineAddressResult}
  */
 export interface OneLineAddressResponse {
   result?: OneLineAddressResult;
@@ -34,9 +34,16 @@ export interface OneLineAddressResponse {
 
 /**
  * Returns the first result from whatever address matches it receives
+ * ```
+ * async function geocode() {
+ *  const result = await geocodeOneLineAddress("123 Foo Street, CA, 4242")
+ *  console.log(result)
+ *  // { coordinates: { x: NUMBER, y: NUMBER }, matchedAddress: "ADDR"}
+ * }
+ * ```
  * @param address {string}
  * @returns {OneLineAddressMatch}
- * @throws {Error} if response status is not OK
+ * @throws Error - "HTTP Error" if response status is not 200 OK
  */
 export async function geocodeOneLineAddress(
   address: string,
@@ -73,14 +80,19 @@ export async function geocodeOneLineAddress(
     }
   }
 
-  return matches[0];
+  if (matches[0]) {
+    return {
+      coordinates: matches[0].coordinates,
+      matchedAddress: matches[0].matchedAddress,
+    };
+  }
 }
 
 /**
- * Returns entire array of {@type OneLineAddressMatch}
+ * Returns array of {@link OneLineAddressMatch}, if one or more results exist.
  * @param {string} address - The address to submit to the census geocoder
  * @returns {OneLineAddressMatch[]} | undefined
- * @throws {Error} if response status is not OK
+ * @throws Error - "HTTP Error" if response status is not OK.
  */
 export async function geocodeOneLineAddressAll(
   address: string,

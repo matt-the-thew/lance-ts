@@ -1,29 +1,51 @@
 {
   "name": "lance-ts",
-  "version": "0.1.0",
-  "description": "Lat/Lng from Address via National Census Endpoint",
+  "version": "1.0.1",
+  "description": "Lat/Long from National Census Endpoint. An opinionated, blazingingly fast geocoding library.",
   "type": "module",
-  "main": "index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.js"
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit",
+    "build": "tsup",
+    "clean": "rm -rf ./dist",
+    "docs:clean": "rm -rf ./site",
+    "docs:build": "typedoc",
+    "docs:gen_site": "mkdocs build",
+    "docs:dev": "typedoc && mkdocs build && mkdocs serve"
   },
-  "keywords": [],
-  "author": "",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "geocoding",
+    "gps",
+    "geography",
+    "geospatial"
+  ],
+  "author": "Matthew Morton <mmortondev@gmail.com>",
   "license": "ISC",
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@11.5.2",
   "devDependencies": {
-    "@types/node": "^25.9.1",
-    "@vitest/ui": "4.1.7",
-    "typescript": "^6.0.3"
-  },
-  "dependencies": {
-    "memfs": "^4.57.2",
-    "vitest": "^4.1.7"
+    "@types/node": "^25.9.2",
+    "@vitest/ui": "4.1.8",
+    "memfs": "^4.57.6",
+    "publint": "^0.3.21",
+    "tsup": "^8.5.1",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-coverage": "^4.0.3",
+    "typedoc-plugin-file-overview": "^0.2.0",
+    "typedoc-plugin-markdown": "^4.12.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

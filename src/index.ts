@@ -1,8 +1,6 @@
 /**
- * @file Library entry point for one-line and batch geocoding functions
  * @module lance-ts
- * @author Matthew Morton
- * @see {@link https://github.com/matt-the-thew/lance-ts}
+ * @author [Matthew Morton](https://github.com/matt-the-thew)
  */
-export * from "./one-line-address";
-export * from "./batch-address";
+export * from "./one-line-address.js";
+export * from "./batch-address.js";

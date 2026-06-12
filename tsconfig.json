@@ -1,9 +1,15 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
+    //for tsup bug 6-9-26
+    "ignoreDeprecations": "6.0",
+    "target": "ESNext",
     "module": "NodeNext",
-    "target": "ES2020",
+    "moduleResolution": "NodeNext",
+    "verbatimModuleSyntax": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "rootDir": ".",
+    "outDir": "./dist",
     // For nodejs:
     "lib": ["esnext"],
     "types": ["node"],
@@ -11,7 +17,6 @@
 
     // Other Outputs
     "sourceMap": true,
-    "declaration": true,
     "declarationMap": true,
 
     // Stricter Typechecking Options
@@ -29,11 +34,17 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
     "skipLibCheck": true,
+
+    "incremental": false,
   },
+  "include": [
+    "src",
+    "tests/one-line-address.test.ts",
+    "tests/batch-address.test.ts",
+  ],
 }
